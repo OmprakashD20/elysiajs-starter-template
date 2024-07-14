@@ -1,0 +1,33 @@
+{
+  "name": "elysia-starter-template",
+  "title": "ElysiaJS Starter Template",
+  "version": "1.0.0",
+  "description": "A Starter Template created using Bun, ElysiaJS, Drizzle ORM, Lucia Auth and PostgreSQL",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate --config=src/config/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=src/config/drizzle.config.ts",
+    "db:drop": "drizzle-kit drop --config=src/config/drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=src/config/drizzle.config.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.0.4",
+    "@elysiajs/swagger": "^1.0.5",
+    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "@sinclair/typebox": "^0.32.34",
+    "arctic": "^1.9.1",
+    "drizzle-orm": "^0.32.0",
+    "elysia": "latest",
+    "lucia": "^3.2.0",
+    "pg": "^8.12.0",
+    "pino-pretty": "^11.2.1",
+    "postgres": "^3.4.4"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.23.0"
+  },
+  "module": "src/index.js"
+}

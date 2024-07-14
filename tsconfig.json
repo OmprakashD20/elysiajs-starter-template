@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "types": ["bun-types"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@config": ["./src/config/"],
+      "@db": ["./src/lib/drizzle/db"],
+      "@plugins/*": ["./src/plugins/*"],
+      "@setup": ["./src/setup.ts"],
+      "@types": ["./src/lib/types/"],
+      "@utils": ["./src/lib/utils/"]
+    }
+  }
+}
