@@ -4,8 +4,11 @@ import { Value } from "@sinclair/typebox/value";
 import { NODE_ENV } from "@types";
 
 const EnvSchema = Type.Object({
-  POSTGRES_URL: Type.String(),
+  BASE_URL: Type.String(),
+  GOOGLE_CLIENT_ID: Type.String(),
+  GOOGLE_CLIENT_SECRET: Type.String(),
   NODE_ENV: Type.Enum(NODE_ENV),
+  POSTGRES_URL: Type.String(),
   PORT: Type.String(),
 });
 
