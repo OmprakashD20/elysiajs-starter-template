@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS "oauth_accounts" (
 	"provider" text DEFAULT 'google',
 	"provider_user_id" text NOT NULL,
 	"access_token" text NOT NULL,
-	"refresh_token" text,
-	"expires_at" timestamp with time zone NOT NULL,
+	"expires_at" timestamp with time zone,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL
 );
@@ -22,7 +21,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"name" text NOT NULL,
 	"email" text NOT NULL,
 	"hashed_password" text,
-	"password_salt" text NOT NULL,
+	"password_salt" text,
 	"image" text DEFAULT 'https://github.com/shadcn.png' NOT NULL,
 	"email_verified" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL,

@@ -8,7 +8,7 @@ export const UserTable = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").unique().notNull(),
   hashedPassword: text("hashed_password"),
-  passwordSalt: text("password_salt").notNull(),
+  passwordSalt: text("password_salt"),
   image: text("image").default("https://github.com/shadcn.png").notNull(),
   emailVerified: boolean("email_verified").default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -27,11 +27,10 @@ export const OAuthAccountTable = pgTable("oauth_accounts", {
   provider: text("provider").default("google"),
   providerUserId: text("provider_user_id").notNull(),
   accessToken: text("access_token").notNull(),
-  refreshToken: text("refresh_token"),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "date",
-  }).notNull(),
+  }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

@@ -11,9 +11,14 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
+      "@auth": ["./src/lib/auth/auth.ts"],
+      "@auth/*": ["./src/lib/auth/*"],
       "@config": ["./src/config/"],
       "@db": ["./src/lib/drizzle/db"],
+      "@package.json": ["./package.json"],
       "@plugins/*": ["./src/plugins/*"],
+      "@modules": ["./src/modules/index.ts"],
+      "@modules/*": ["./src/modules/*"],
       "@setup": ["./src/setup.ts"],
       "@types": ["./src/lib/types/"],
       "@utils": ["./src/lib/utils/"]

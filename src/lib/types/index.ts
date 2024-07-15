@@ -7,6 +7,7 @@ export enum NODE_ENV {
 }
 
 export type User = InferResultType<"UserTable">;
+export type OAuthAccount = InferResultType<"OAuthAccountTable">;
 
 export type GoogleUserInfo = {
   sub: string;
@@ -20,12 +21,22 @@ export type GoogleUserInfo = {
   updated_at: number;
 };
 
+export type GithubUserInfo = {
+  id: string;
+  email: string;
+  name: string;
+  avatar_url: string;
+  updated_at: number;
+};
+
+export type AuthProviders = "google" | "github";
+
 export type ProviderAuthUrlParams = {
   state: string;
-  codeVerifier: string;
+  codeVerifier?: string;
 };
 
 export type ProviderGetTokensParams = {
   code: string;
-  codeVerifier: string;
+  codeVerifier?: string;
 };

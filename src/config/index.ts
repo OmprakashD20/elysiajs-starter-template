@@ -7,6 +7,8 @@ const EnvSchema = Type.Object({
   BASE_URL: Type.String(),
   GOOGLE_CLIENT_ID: Type.String(),
   GOOGLE_CLIENT_SECRET: Type.String(),
+  GITHUB_CLIENT_ID: Type.String(),
+  GITHUB_CLIENT_SECRET: Type.String(),
   NODE_ENV: Type.Enum(NODE_ENV),
   POSTGRES_URL: Type.String(),
   PORT: Type.String(),

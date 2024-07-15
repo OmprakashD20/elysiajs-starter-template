@@ -5,8 +5,10 @@ import setup from "@setup";
 
 const app = new Elysia()
   .use(setup)
-  .get("/", ({ set }) => {
-    set.redirect = "/swagger";
+  .get("/", () => {
+    return {
+      message: "Welcome to Elysia Starter Template!",
+    };
   })
   .listen(config.PORT);
 

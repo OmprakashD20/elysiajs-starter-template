@@ -1,24 +1,14 @@
 import { Elysia } from "elysia";
-import swagger from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 
-import { description, title, version } from "../package.json";
-
+import ApiPlugin from "@modules";
 import ErrorPlugin from "@plugins/errors";
+import SwaggerPlugin from "@plugins/swagger";
 
 const setup = new Elysia()
   .use(cors())
+  .use(SwaggerPlugin)
   .use(ErrorPlugin)
-  .use(
-    swagger({
-      documentation: {
-        info: {
-          title,
-          version,
-          description,
-        },
-      },
-    })
-  );
+  .use(ApiPlugin);
 
 export default setup;

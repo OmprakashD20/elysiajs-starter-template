@@ -18,6 +18,14 @@ export class AuthorizationError extends Error {
   }
 }
 
+export class BadRequestError extends Error {
+  public status = 400;
+  public type = "Bad Request";
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export class ClientError extends Error {
   public status: number;
   public type: string;
@@ -30,6 +38,7 @@ export class ClientError extends Error {
 
 export const ERROR_CODE_STATUS = new MapWithDefault<string, number>([
   ["PARSE", 400],
+  ["BAD_REQUEST", 400],
   ["INVALID_COOKIE_SIGNATURE", 401],
   ["AUTHENTICATION", 401],
   ["AUTHORIZATION", 403],
