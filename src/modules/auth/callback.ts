@@ -56,8 +56,6 @@ const callback = new Elysia().get(
               email: account?.email!,
               image: account?.image!,
               emailVerified: true,
-              hashedPassword: null,
-              passwordSalt: null,
             },
             txn
           );
@@ -106,14 +104,20 @@ const callback = new Elysia().get(
   },
   {
     params: t.Object({
-      provider: t.Union([t.Literal("google"), t.Literal("github")]),
+      provider: t.Union([t.Literal("google"), t.Literal("github")], {
+        error: "Supported providers are google and github",
+      }),
     }),
     query: t.Object(
       {
-        code: t.String(),
-        state: t.String(),
+        code: t.String({
+          error: "Invalid query params",
+        }),
+        state: t.String({
+          error: "Invalid query params",
+        }),
       },
-      { additionalProperties: true }
+      {  additionalProperties: true }
     ),
   }
 );

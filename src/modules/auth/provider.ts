@@ -50,7 +50,9 @@ const provider = new Elysia().get(
   },
   {
     params: t.Object({
-      provider: t.Union([t.Literal("google"), t.Literal("github")]),
+      provider: t.Union([t.Literal("google"), t.Literal("github")], {
+        error: "Supported providers are google and github",
+      }),
     }),
     query: t.Object({
       next: t.Optional(t.String()),

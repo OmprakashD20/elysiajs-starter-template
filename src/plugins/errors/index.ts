@@ -59,7 +59,10 @@ const ErrorPlugin = new Elysia()
     set.status =
       code === "CLIENT_ERROR" ? error.status : ERROR_CODE_STATUS.get(code);
 
-    const errorType = "type" in error ? error.type : "INTERNAL";
+    const errorType =
+      code === "CLIENT_ERROR"
+        ? error.type
+        : code;
 
     return {
       error: {

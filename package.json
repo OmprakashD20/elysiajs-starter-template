@@ -20,6 +20,7 @@
     "drizzle-orm": "^0.32.0",
     "elysia": "latest",
     "lucia": "^3.2.0",
+    "oslo": "^1.2.1",
     "pg": "^8.12.0",
     "pino-pretty": "^11.2.1",
     "postgres": "^3.4.4"

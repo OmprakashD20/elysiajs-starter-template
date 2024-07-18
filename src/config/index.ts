@@ -11,6 +11,7 @@ const EnvSchema = Type.Object({
   GITHUB_CLIENT_SECRET: Type.String(),
   NODE_ENV: Type.Enum(NODE_ENV),
   POSTGRES_URL: Type.String(),
+  PASSWORD_PEPPER: Type.String(),
   PORT: Type.String(),
 });
 

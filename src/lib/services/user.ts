@@ -4,6 +4,15 @@ import db from "@db";
 import { OAuthAccountTable, UserTable } from "@/lib/drizzle/schema";
 import { OAuthAccount, User } from "@types";
 
+type CreateUser = {
+  email: string;
+  name: string;
+  hashedPassword?: string;
+  passwordSalt?: string;
+  emailVerified?: boolean;
+  image?: string;
+};
+
 export async function getUserByEmail(
   email: string,
   txn = db
@@ -14,7 +23,7 @@ export async function getUserByEmail(
 }
 
 export async function createUser(
-  user: Omit<User, "id" | "createdAt" | "updatedAt">,
+  user: CreateUser,
   txn = db
 ): Promise<{ userId: string }> {
   const [userId] = await txn
