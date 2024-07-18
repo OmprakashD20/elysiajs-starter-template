@@ -4,7 +4,7 @@ import { DEFAULT, MapWithDefault } from "@utils";
 
 export class AuthenticationError extends Error {
   public status = 401;
-  public type = "Authentication";
+  public type = "AUTHENTICATION";
   constructor(message: string) {
     super(message);
   }
@@ -12,7 +12,7 @@ export class AuthenticationError extends Error {
 
 export class AuthorizationError extends Error {
   public status = 403;
-  public type = "Authorization";
+  public type = "AUTHORIZATION";
   constructor(message: string) {
     super(message);
   }
@@ -20,7 +20,7 @@ export class AuthorizationError extends Error {
 
 export class BadRequestError extends Error {
   public status = 400;
-  public type = "Bad Request";
+  public type = "BAD REQUEST";
   constructor(message: string) {
     super(message);
   }
@@ -56,9 +56,10 @@ const ErrorPlugin = new Elysia()
     CLIENT_ERROR: ClientError,
   })
   .onError({ as: "global" }, ({ code, error, set }) => {
-    set.status = ERROR_CODE_STATUS.get(code);
+    set.status =
+      code === "CLIENT_ERROR" ? error.status : ERROR_CODE_STATUS.get(code);
 
-    const errorType = "type" in error ? error.type : "Internal";
+    const errorType = "type" in error ? error.type : "INTERNAL";
 
     return {
       error: {
