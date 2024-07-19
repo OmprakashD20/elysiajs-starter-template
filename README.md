@@ -27,16 +27,16 @@ This template is in its early stages of development. The following components ar
 - [x] Basic ElysiaJS setup
 - [ ] Integration with Lucia for authentication
   - [x] Lucia auth setup
-  - [ ] Email and password authentication
+  - [x] Email and password authentication
   - [ ] Email verification
   - [ ] Password reset functionality
-  - [ ] OAuth with Google
-  - [ ] OAuth with GitHub
+  - [x] OAuth with Google
+  - [x] OAuth with GitHub
 - [x] Drizzle ORM setup and basic schema
 - [x] PostgreSQL connection and configuration
 - [ ] Basic project structure and conventions
-- [ ] Initial route setup
-- [ ] Environment configuration
+- [x] Initial route setup
+- [x] Environment configuration
 
 ## Authentication
 
