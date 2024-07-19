@@ -2,7 +2,7 @@ import Elysia, { t } from "elysia";
 import { generateCodeVerifier, generateState } from "arctic";
 
 import { config } from "@config";
-import { genAuthUrl } from "@/lib/utils/auth";
+import { genAuthUrl } from "@utils/auth";
 
 const provider = new Elysia().get(
   "/:provider",

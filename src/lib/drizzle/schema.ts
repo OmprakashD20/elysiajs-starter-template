@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const UserTable = pgTable("users", {
   id: text("id")
@@ -49,9 +49,27 @@ export const SessionTable = pgTable("sessions", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const UserTableRelations = relations(UserTable, ({ many }) => ({
+export const EmailVerificationCodeTable = pgTable("email_verification_codes", {
+  id: serial("id").primaryKey(),
+  code: text("code").notNull(),
+  userId: text("user_id")
+    .unique()
+    .notNull()
+    .references(() => UserTable.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
+export const UserTableRelations = relations(UserTable, ({ one, many }) => ({
   sessions: many(SessionTable),
   oauthAccounts: many(OAuthAccountTable),
+  emailVerificationCode: one(EmailVerificationCodeTable, {
+    fields: [UserTable.id],
+    references: [EmailVerificationCodeTable.userId],
+  }),
 }));
 
 export const OAuthAccountTableRelations = relations(

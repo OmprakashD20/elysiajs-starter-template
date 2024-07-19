@@ -1,12 +1,18 @@
-import Elysia, { NotFoundError, t } from "elysia";
+import Elysia, { InternalServerError, NotFoundError, t } from "elysia";
 import { password as BunPassword } from "bun";
+import { isWithinExpirationDate } from "oslo";
 
 import { config } from "@config";
-import { luciaSession } from "@/lib/auth/auth";
+import { luciaSession } from "@auth";
 import {
-  AuthorizationError,
-} from "@plugins/errors";
-import { getUserByEmail } from "@/lib/services";
+  createVerificationCode,
+  deleteVerificationCode,
+  getUserByEmail,
+  getVerificationCode,
+} from "@/lib/services";
+import { AuthorizationError } from "@plugins/errors";
+import { generateVerificationCode } from "@utils";
+import { sendEmail } from "@utils/email";
 
 const login = new Elysia().post(
   "/login",
@@ -25,19 +31,49 @@ const login = new Elysia().post(
 
     if (!isPasswordValid) throw new AuthorizationError("Invalid credentials");
 
+    if (!user.emailVerified) {
+      const { expirationDate, verificationCode } = generateVerificationCode();
+
+      const emailResponse = await sendEmail({
+        name: user.name,
+        code: verificationCode,
+        email,
+      });
+
+      if (!emailResponse) throw new InternalServerError();
+
+      const existingCode = await getVerificationCode(user.id);
+
+      if (existingCode) {
+        const hasExpired = !isWithinExpirationDate(existingCode.expiresAt);
+
+        if (hasExpired) await deleteVerificationCode(user.id);
+      }
+
+      await createVerificationCode({
+        code: verificationCode,
+        userId: user.id,
+        email,
+        expiresAt: expirationDate,
+      });
+    }
+
     const session = await luciaSession.create(user.id);
     const sessionCookie = luciaSession.createCookie(session.id);
 
     set.status = 200;
 
-    cookie[sessionCookie.name]?.set({
+    cookie[sessionCookie.name].set({
       value: sessionCookie.value,
       ...sessionCookie.attributes,
     });
 
     return {
       user,
-      message: "You have successfully logged in",
+      message: !user.emailVerified
+        ? "Verification code has been sent to your email 🎉"
+        : "You have successfully logged in 🎉",
+      success: true,
     };
   },
   {

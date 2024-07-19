@@ -2,12 +2,12 @@ import {
   getGithubAccount,
   getGithubTokens,
   githubAuthUrl,
-} from "@/lib/auth/providers/github";
+} from "@auth/providers/github";
 import {
   getGoogleAccount,
   getGoogleTokens,
   googleAuthUrl,
-} from "@/lib/auth/providers/google";
+} from "@auth/providers/google";
 import { BadRequestError } from "@plugins/errors";
 import {
   AuthProviders,

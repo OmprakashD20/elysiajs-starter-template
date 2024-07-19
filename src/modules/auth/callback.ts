@@ -3,8 +3,8 @@ import { GitHubTokens, GoogleTokens, OAuth2RequestError } from "arctic";
 
 import { luciaSession } from "@auth";
 import db from "@db";
-import { getAuthAccount, getAuthTokens } from "@/lib/utils/auth";
-import { AuthenticationError, BadRequestError } from "@/plugins/errors";
+import { getAuthAccount, getAuthTokens } from "@utils/auth";
+import { AuthenticationError, BadRequestError } from "@plugins/errors";
 import {
   createOAuthAccount,
   createUser,
@@ -92,8 +92,6 @@ const callback = new Elysia().get(
 
       set.redirect = next;
     } catch (error) {
-      console.error(error);
-
       if (error instanceof OAuth2RequestError)
         throw new AuthenticationError(
           `There was an error while signing in with ${provider} 😔`

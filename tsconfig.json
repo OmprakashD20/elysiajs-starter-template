@@ -21,7 +21,8 @@
       "@modules/*": ["./src/modules/*"],
       "@setup": ["./src/setup.ts"],
       "@types": ["./src/lib/types/"],
-      "@utils": ["./src/lib/utils/"]
+      "@utils": ["./src/lib/utils/"],
+      "@utils/*": ["./src/lib/utils/*"]
     }
   }
 }

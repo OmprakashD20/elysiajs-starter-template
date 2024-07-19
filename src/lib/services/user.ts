@@ -1,17 +1,13 @@
 import { and, eq } from "drizzle-orm";
 
 import db from "@db";
-import { OAuthAccountTable, UserTable } from "@/lib/drizzle/schema";
-import { OAuthAccount, User } from "@types";
-
-type CreateUser = {
-  email: string;
-  name: string;
-  hashedPassword?: string;
-  passwordSalt?: string;
-  emailVerified?: boolean;
-  image?: string;
-};
+import {
+  EmailVerificationCodeTable,
+  OAuthAccountTable,
+  UserTable,
+} from "@/lib/drizzle/schema";
+import { EmailVerificationCode, OAuthAccount, User } from "@types";
+import { MakeOptional } from "@utils";
 
 export async function getUserByEmail(
   email: string,
@@ -23,7 +19,11 @@ export async function getUserByEmail(
 }
 
 export async function createUser(
-  user: CreateUser,
+  user: MakeOptional<
+    User,
+    "emailVerified" | "hashedPassword" | "image" | "passwordSalt",
+    "createdAt" | "id" | "updatedAt"
+  >,
   txn = db
 ): Promise<{ userId: string }> {
   const [userId] = await txn
@@ -33,6 +33,17 @@ export async function createUser(
       userId: UserTable.id,
     });
   return userId;
+}
+
+export async function updateUser(
+  userId: string,
+  data: Partial<User>,
+  txn = db
+) {
+  await txn
+    .update(UserTable)
+    .set({ ...data })
+    .where(eq(UserTable.id, userId));
 }
 
 export async function getOAuthAccountByProvider(
@@ -53,4 +64,26 @@ export async function createOAuthAccount(
   txn = db
 ) {
   return await txn.insert(OAuthAccountTable).values({ ...user });
+}
+
+export async function createVerificationCode(
+  data: Omit<EmailVerificationCode, "id">,
+  txn = db
+) {
+  return await txn.insert(EmailVerificationCodeTable).values({ ...data });
+}
+
+export async function getVerificationCode(
+  userId: string,
+  txn = db
+): Promise<EmailVerificationCode | undefined> {
+  return await txn.query.EmailVerificationCodeTable.findFirst({
+    where: eq(EmailVerificationCodeTable.userId, userId),
+  });
+}
+
+export async function deleteVerificationCode(userId: string, txn = db) {
+  await txn
+    .delete(EmailVerificationCodeTable)
+    .where(eq(EmailVerificationCodeTable.userId, userId));
 }

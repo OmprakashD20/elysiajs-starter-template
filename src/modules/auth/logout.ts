@@ -20,8 +20,8 @@ const logout = new Elysia().post("/logout", async ({ cookie }) => {
   });
 
   return {
-    success: true,
     message: "Logged out successfully 🎉",
+    success: true,
   };
 });
 

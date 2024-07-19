@@ -16,12 +16,17 @@ const lucia = new Lucia(adapter, {
   getUserAttributes: (user) => user,
 });
 
+lucia.invalidateUserSessions;
+
 export const luciaSession = {
   create: (userId: string) => lucia.createSession(userId, {}),
   delete: () => lucia.deleteExpiredSessions(),
   invalidate: (sessionId: string) => lucia.invalidateSession(sessionId),
+  invalidateAll: (userId: string) => lucia.invalidateUserSessions(userId),
   createCookie: (sessionId: string) => lucia.createSessionCookie(sessionId),
   createBlankCookie: () => lucia.createBlankSessionCookie(),
+  readSessionCookie: (cookieHeader: string) =>
+    lucia.readSessionCookie(cookieHeader),
   validate: (sessionId: string) => lucia.validateSession(sessionId),
 };
 

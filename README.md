@@ -28,7 +28,7 @@ This template is in its early stages of development. The following components ar
 - [ ] Integration with Lucia for authentication
   - [x] Lucia auth setup
   - [x] Email and password authentication
-  - [ ] Email verification
+  - [x] Email verification
   - [ ] Password reset functionality
   - [x] OAuth with Google
   - [x] OAuth with GitHub

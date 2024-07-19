@@ -1,11 +1,17 @@
 import Elysia, { InternalServerError, t } from "elysia";
 import { password as BunPassword } from "bun";
 
+import { luciaSession } from "@auth";
 import { config } from "@config";
-import { luciaSession } from "@/lib/auth/auth";
+import db from "@db";
 import { ClientError } from "@plugins/errors";
-import { createUser, getUserByEmail } from "@/lib/services";
-import { generatePasswordSalt } from "@utils";
+import {
+  createUser,
+  createVerificationCode,
+  getUserByEmail,
+} from "@/lib/services";
+import { generatePasswordSalt, generateVerificationCode } from "@utils";
+import { sendEmail } from "@utils/email";
 
 const register = new Elysia().post(
   "/register",
@@ -22,26 +28,60 @@ const register = new Elysia().post(
     );
 
     try {
-      const { userId } = await createUser({
-        email,
-        name,
-        hashedPassword,
-        passwordSalt,
+      let userId;
+      await db.transaction(async (txn) => {
+        const result = await createUser(
+          {
+            email,
+            name,
+            hashedPassword,
+            passwordSalt,
+          },
+          txn
+        );
+
+        userId = result.userId;
+
+        const { expirationDate, verificationCode } = generateVerificationCode();
+
+        const emailResponse = await sendEmail({
+          name,
+          code: verificationCode,
+          email,
+        });
+
+        if (!emailResponse) throw new InternalServerError();
+
+        await createVerificationCode(
+          {
+            code: verificationCode,
+            userId,
+            email,
+            expiresAt: expirationDate,
+          },
+          txn
+        );
       });
 
-      const session = await luciaSession.create(userId);
+      const session = await luciaSession.create(userId!);
       const sessionCookie = luciaSession.createCookie(session.id);
+
+      // Set the status code to 302 to redirect the user to the email verification page on client side
+      // set.status = 302;
 
       set.status = 201;
 
-      cookie[sessionCookie.name]?.set({
+      cookie[sessionCookie.name].set({
         value: sessionCookie.value,
         ...sessionCookie.attributes,
       });
 
-      return { userId, message: "You have successfully registered!!" };
+      return {
+        userId,
+        message: "Verification code has been sent to your email 🎉",
+        success: true,
+      };
     } catch (error: any) {
-      console.error(error);
       throw new InternalServerError("Failed to register user 😔");
     }
   },
@@ -53,7 +93,7 @@ const register = new Elysia().post(
       }),
       password: t.String({
         minLength: 8,
-        error: "Password must be at least 8 characters long", 
+        error: "Password must be at least 8 characters long",
       }),
       name: t.String({
         minLength: 3,

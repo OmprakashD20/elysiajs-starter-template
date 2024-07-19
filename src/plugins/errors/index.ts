@@ -53,6 +53,7 @@ const ErrorPlugin = new Elysia()
   .error({
     AUTHENTICATION: AuthenticationError,
     AUTHORIZATION: AuthorizationError,
+    BAD_REQUEST: BadRequestError,
     CLIENT_ERROR: ClientError,
   })
   .onError({ as: "global" }, ({ code, error, set }) => {

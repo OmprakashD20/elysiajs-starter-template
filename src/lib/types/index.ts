@@ -8,6 +8,7 @@ export enum NODE_ENV {
 
 export type User = InferResultType<"UserTable">;
 export type OAuthAccount = InferResultType<"OAuthAccountTable">;
+export type EmailVerificationCode = InferResultType<"EmailVerificationCodeTable">;
 
 export type GoogleUserInfo = {
   sub: string;
