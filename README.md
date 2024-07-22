@@ -25,11 +25,11 @@ This template aims to provide a robust starting point for building web applicati
 This template is in its early stages of development. The following components are being worked on:
 
 - [x] Basic ElysiaJS setup
-- [ ] Integration with Lucia for authentication
+- [x] Integration with Lucia for authentication
   - [x] Lucia auth setup
   - [x] Email and password authentication
   - [x] Email verification
-  - [ ] Password reset functionality
+  - [x] Password reset functionality
   - [x] OAuth with Google
   - [x] OAuth with GitHub
 - [x] Drizzle ORM setup and basic schema

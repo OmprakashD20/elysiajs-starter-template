@@ -5,6 +5,7 @@ import { NODE_ENV } from "@types";
 
 const EnvSchema = Type.Object({
   BASE_URL: Type.String(),
+  CLIENT_BASE_URL: Type.String(),
   EMAIL_PASSWORD: Type.String(),
   EMAIL_USER: Type.String(),
   GOOGLE_CLIENT_ID: Type.String(),

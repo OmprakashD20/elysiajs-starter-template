@@ -63,12 +63,29 @@ export const EmailVerificationCodeTable = pgTable("email_verification_codes", {
   }).notNull(),
 });
 
+export const PasswordResetTokenTable = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  hashedToken: text("hashed_token").notNull(),
+  userId: text("user_id")
+    .unique()
+    .notNull()
+    .references(() => UserTable.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
 export const UserTableRelations = relations(UserTable, ({ one, many }) => ({
   sessions: many(SessionTable),
   oauthAccounts: many(OAuthAccountTable),
   emailVerificationCode: one(EmailVerificationCodeTable, {
     fields: [UserTable.id],
     references: [EmailVerificationCodeTable.userId],
+  }),
+  passwordResetToken: one(PasswordResetTokenTable, {
+    fields: [UserTable.id],
+    references: [PasswordResetTokenTable.userId],
   }),
 }));
 

@@ -18,12 +18,12 @@ const verify = new Elysia().post(
 
     if (!user)
       throw new AuthorizationError(
-        "You must be logged in to verify your email"
+        "You must be logged in to verify your email 😔"
       );
 
     const isValidCode = await verifyCode(code, user);
 
-    if (!isValidCode) throw new BadRequestError("Invalid verification code");
+    if (!isValidCode) throw new BadRequestError("Invalid verification code 😔");
 
     await luciaSession.invalidateAll(user.id);
 

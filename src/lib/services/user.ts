@@ -4,9 +4,10 @@ import db from "@db";
 import {
   EmailVerificationCodeTable,
   OAuthAccountTable,
+  PasswordResetTokenTable,
   UserTable,
 } from "@/lib/drizzle/schema";
-import { EmailVerificationCode, OAuthAccount, User } from "@types";
+import { EmailVerificationCode, OAuthAccount, PasswordResetToken, User } from "@types";
 import { MakeOptional } from "@utils";
 
 export async function getUserByEmail(
@@ -87,3 +88,26 @@ export async function deleteVerificationCode(userId: string, txn = db) {
     .delete(EmailVerificationCodeTable)
     .where(eq(EmailVerificationCodeTable.userId, userId));
 }
+
+export async function createPasswordResetToken(
+  data: Omit<PasswordResetToken, "id">,
+  txn = db
+) {
+  return await txn.insert(PasswordResetTokenTable).values({ ...data });
+}
+
+export async function getPasswordResetToken(
+  hashedToken: string,
+  txn = db
+): Promise<PasswordResetToken | undefined> {
+  return await txn.query.PasswordResetTokenTable.findFirst({
+    where: eq(PasswordResetTokenTable.hashedToken, hashedToken),
+  });
+}
+
+export async function deletePasswordResetToken(userId: string, txn = db) {
+  await txn
+    .delete(PasswordResetTokenTable)
+    .where(eq(PasswordResetTokenTable.userId, userId));
+}
+

@@ -20,6 +20,7 @@
       "@modules": ["./src/modules/index.ts"],
       "@modules/*": ["./src/modules/*"],
       "@setup": ["./src/setup.ts"],
+      "@templates/*": ["./src/lib/templates/*"],
       "@types": ["./src/lib/types/"],
       "@utils": ["./src/lib/utils/"],
       "@utils/*": ["./src/lib/utils/*"]

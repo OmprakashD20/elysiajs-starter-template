@@ -1,6 +1,8 @@
 import { Omit } from "@sinclair/typebox";
+import { generateId } from "lucia";
 import { createDate, TimeSpan, type TimeSpanUnit } from "oslo";
-import { alphabet, generateRandomString } from "oslo/crypto";
+import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
+import { encodeHex } from "oslo/encoding";
 
 export type MakeOptional<
   T,
@@ -28,4 +30,24 @@ export function generateVerificationCode(
   const verificationCode = generateRandomString(6, alphabet("0-9", "A-Z"));
 
   return { expirationDate, verificationCode };
+}
+
+export async function encode(data: string): Promise<string> {
+  return encodeHex(await sha256(new TextEncoder().encode(data)))
+}
+
+export async function generateResetToken(
+  time: number = 2,
+  timeSpanUnit: TimeSpanUnit = "h"
+): Promise<{
+  expirationDate: Date;
+  resetToken: string;
+  hashedResetToken: string;
+}> {
+  const token = generateId(40);
+  const hashedToken = await encode(token);
+
+  const expirationDate = createDate(new TimeSpan(time, timeSpanUnit));
+
+  return { expirationDate, resetToken: token, hashedResetToken: hashedToken };
 }

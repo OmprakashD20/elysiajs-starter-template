@@ -6,6 +6,7 @@ import register from "@modules/auth/register";
 import verify from "@modules/auth/verify";
 import login from "@modules/auth/login";
 import logout from "@modules/auth/logout";
+import resetPassword from "@modules/auth/reset-password";
 
 const AuthModule = new Elysia({
   prefix: "/auth",
@@ -18,6 +19,7 @@ const AuthModule = new Elysia({
   .use(register)
   .use(verify)
   .use(login)
-  .use(logout);
+  .use(logout)
+  .use(resetPassword);
 
 export default AuthModule;
