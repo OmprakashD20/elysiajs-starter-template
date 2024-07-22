@@ -1,15 +1,15 @@
-import Elysia, { InternalServerError, t } from "elysia";
+import Elysia, { t } from "elysia";
 import { password as BunPassword } from "bun";
 
 import { luciaSession } from "@auth";
 import { config } from "@config";
-import db from "@db";
 import { ClientError } from "@plugins/errors";
 import {
   createUser,
   createVerificationCode,
   getUserByEmail,
 } from "@/lib/services";
+import VerifyEmailTemplate from "@templates/verify-email";
 import { generatePasswordSalt, generateVerificationCode } from "@utils";
 import { sendEmail } from "@utils/email";
 
@@ -20,70 +20,53 @@ const register = new Elysia().post(
 
     const existingUser = await getUserByEmail(email);
     if (existingUser)
-      throw new ClientError("User already exists", 409, "CONFLICT");
+      throw new ClientError("User already exists 😔", 409, "CONFLICT");
 
     const passwordSalt = generatePasswordSalt();
     const hashedPassword = await BunPassword.hash(
       passwordSalt + password + config.PASSWORD_PEPPER
     );
 
-    try {
-      let userId;
-      await db.transaction(async (txn) => {
-        const result = await createUser(
-          {
-            email,
-            name,
-            hashedPassword,
-            passwordSalt,
-          },
-          txn
-        );
+    const { userId } = await createUser({
+      email,
+      name,
+      hashedPassword,
+      passwordSalt,
+    });
 
-        userId = result.userId;
+    const { expirationDate, verificationCode } = generateVerificationCode();
 
-        const { expirationDate, verificationCode } = generateVerificationCode();
+    await sendEmail({
+      email,
+      subject: "Email Verification",
+      template: VerifyEmailTemplate(name, verificationCode),
+    });
 
-        const emailResponse = await sendEmail({
-          name,
-          code: verificationCode,
-          email,
-        });
+    await createVerificationCode({
+      code: verificationCode,
+      userId,
+      email,
+      expiresAt: expirationDate,
+    });
 
-        if (!emailResponse) throw new InternalServerError();
+    const session = await luciaSession.create(userId!);
+    const sessionCookie = luciaSession.createCookie(session.id);
 
-        await createVerificationCode(
-          {
-            code: verificationCode,
-            userId,
-            email,
-            expiresAt: expirationDate,
-          },
-          txn
-        );
-      });
+    // Set the status code to 302 to redirect the user to the email verification page on client side
+    // set.status = 302;
 
-      const session = await luciaSession.create(userId!);
-      const sessionCookie = luciaSession.createCookie(session.id);
+    set.status = 201;
 
-      // Set the status code to 302 to redirect the user to the email verification page on client side
-      // set.status = 302;
+    cookie[sessionCookie.name].set({
+      value: sessionCookie.value,
+      ...sessionCookie.attributes,
+    });
 
-      set.status = 201;
-
-      cookie[sessionCookie.name].set({
-        value: sessionCookie.value,
-        ...sessionCookie.attributes,
-      });
-
-      return {
-        userId,
-        message: "Verification code has been sent to your email 🎉",
-        success: true,
-      };
-    } catch (error: any) {
-      throw new InternalServerError("Failed to register user 😔");
-    }
+    return {
+      userId,
+      message: "Verification code has been sent to your email 🎉",
+      success: true,
+    };
   },
   {
     body: t.Object({

@@ -1,9 +1,9 @@
-import Elysia, { InternalServerError, NotFoundError, t } from "elysia";
+import Elysia, { NotFoundError, t } from "elysia";
 import { password as BunPassword } from "bun";
 import { isWithinExpirationDate } from "oslo";
 
-import { config } from "@config";
 import { luciaSession } from "@auth";
+import { config } from "@config";
 import {
   createVerificationCode,
   deleteVerificationCode,
@@ -11,6 +11,7 @@ import {
   getVerificationCode,
 } from "@/lib/services";
 import { AuthorizationError } from "@plugins/errors";
+import VerifyEmailTemplate from "@templates/verify-email";
 import { generateVerificationCode } from "@utils";
 import { sendEmail } from "@utils/email";
 
@@ -22,40 +23,45 @@ const login = new Elysia().post(
     const user = await getUserByEmail(email);
 
     if (!user || !user.hashedPassword || !user.passwordSalt)
-      throw new NotFoundError("User not found");
+      throw new NotFoundError("User not found 😔");
 
     const isPasswordValid = await BunPassword.verify(
       user.passwordSalt + password + config.PASSWORD_PEPPER,
       user.hashedPassword
     );
 
-    if (!isPasswordValid) throw new AuthorizationError("Invalid credentials");
+    if (!isPasswordValid)
+      throw new AuthorizationError("Invalid credentials 😔");
 
     if (!user.emailVerified) {
-      const { expirationDate, verificationCode } = generateVerificationCode();
-
-      const emailResponse = await sendEmail({
-        name: user.name,
-        code: verificationCode,
-        email,
-      });
-
-      if (!emailResponse) throw new InternalServerError();
-
       const existingCode = await getVerificationCode(user.id);
+      let hasExpired: boolean = true;
+      if (existingCode)
+        hasExpired = !isWithinExpirationDate(existingCode.expiresAt);
 
-      if (existingCode) {
-        const hasExpired = !isWithinExpirationDate(existingCode.expiresAt);
+      if (hasExpired) {
+        await deleteVerificationCode(user.id);
+        const { expirationDate, verificationCode } = generateVerificationCode();
 
-        if (hasExpired) await deleteVerificationCode(user.id);
+        await sendEmail({
+          email,
+          subject: "Email Verification",
+          template: VerifyEmailTemplate(user.name, verificationCode),
+        });
+
+        await createVerificationCode({
+          code: verificationCode,
+          userId: user.id,
+          email,
+          expiresAt: expirationDate,
+        });
+      } else {
+        await sendEmail({
+          email,
+          subject: "Email Verification",
+          template: VerifyEmailTemplate(user.name, existingCode?.code!),
+        });
       }
-
-      await createVerificationCode({
-        code: verificationCode,
-        userId: user.id,
-        email,
-        expiresAt: expirationDate,
-      });
     }
 
     const session = await luciaSession.create(user.id);
@@ -69,7 +75,7 @@ const login = new Elysia().post(
     });
 
     return {
-      user,
+      user: user.emailVerified && user,
       message: !user.emailVerified
         ? "Verification code has been sent to your email 🎉"
         : "You have successfully logged in 🎉",
