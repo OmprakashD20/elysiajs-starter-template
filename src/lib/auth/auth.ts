@@ -16,8 +16,6 @@ const lucia = new Lucia(adapter, {
   getUserAttributes: (user) => user,
 });
 
-lucia.invalidateUserSessions;
-
 export const luciaSession = {
   create: (userId: string) => lucia.createSession(userId, {}),
   delete: () => lucia.deleteExpiredSessions(),
